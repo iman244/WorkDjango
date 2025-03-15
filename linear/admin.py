@@ -7,8 +7,9 @@ class WorkInline(admin.TabularInline):
 
 @admin.register(Issue)
 class IssueAdmin(admin.ModelAdmin):
+    list_display = ('url', 'duration')
     inlines = [WorkInline]
 
 @admin.register(Work)
 class WorkAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('issue', 'duration')
