@@ -12,4 +12,4 @@ class IssueAdmin(admin.ModelAdmin):
 
 @admin.register(Work)
 class WorkAdmin(admin.ModelAdmin):
-    list_display = ('issue', 'duration')
+    list_display = ('issue', 'start', 'end', 'duration')

@@ -22,4 +22,5 @@ admin.site.site_title = "Work Hour"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', admin.site.login),
 ]
