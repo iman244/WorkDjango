@@ -5,8 +5,6 @@ from datetime import timedelta
 # Create your models here.
 class Issue(models.Model):
     url = models.URLField()
-    description = models.TextField(max_length=4000)
-
 
     def duration(self):
         """
@@ -18,10 +16,6 @@ class Issue(models.Model):
         ).aggregate(total_duration=models.Sum('duration'))['total_duration']
 
         return total_duration or timedelta()
-        # for work in self.works.all():
-        #      print(work.duration())
-
-        # return sum(work.duration() for work in self.works.all())
 
     def __str__(self):
         return self.url
@@ -29,6 +23,7 @@ class Issue(models.Model):
 
 class Work(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.PROTECT, related_name='works')
+    description = models.TextField(max_length=4000,default="", blank=True, null=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
 
