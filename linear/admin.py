@@ -43,7 +43,8 @@ class IssueAdmin(admin.ModelAdmin):
 
                 # Add the total to the template context
                 response.context_data['total'] = formatted_total
-            
+                response.context_data['total_value'] = f"{(hours * 250 * 10 ** 3):,}"
+
             return response
         except:
             return response
@@ -82,7 +83,8 @@ class WorkAdmin(admin.ModelAdmin):
 
                 # Add the total to the template context
                 response.context_data['total'] = formatted_total
-            
+                response.context_data['total_value'] = f"{(hours * 250 * 10 ** 3):,}"
+                            
             return response
         except:
             return response
