@@ -26,9 +26,19 @@ class Work(models.Model):
     description = models.TextField(max_length=4000,default="", blank=True, null=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
+    overwork_day = models.BooleanField(default=False)
 
+    @property
     def duration(self):
         return self.end - self.start
+
+    @property
+    def overwork_duration(self):
+        if self.overwork_day:
+            return self.end - self.start
+        else:
+            overwork = self.end - self.start - timedelta(hours=9)   
+            return overwork if overwork > timedelta() else timedelta()
 
     def __str__(self):
         return self.issue.url
