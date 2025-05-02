@@ -5,16 +5,22 @@ from django.db.models import ExpressionWrapper, F, DurationField, Sum
 from django.utils.formats import number_format
 from datetime import timedelta
 from .actions import mark_as_overwork
+from import_export.admin import ImportExportModelAdmin
+from import_export.formats import base_formats
+from import_export import resources, fields
+from import_export.widgets import ForeignKeyWidget
+
 
 class WorkInline(admin.TabularInline):
     model = Work
     extra = 1
 
 @admin.register(Issue)
-class IssueAdmin(admin.ModelAdmin):
+class IssueAdmin(ImportExportModelAdmin):
     list_display = ('url', 'duration')
     inlines = [WorkInline]
-    
+    formats = [base_formats.CSV, base_formats.XLSX]
+
     def changelist_view(self, request, extra_context=None):
         # Call the superclass to get the default context
         response = super().changelist_view(request, extra_context=extra_context)
@@ -65,10 +71,32 @@ class IssueAdmin(admin.ModelAdmin):
             return response
 
 
+class WorkResource(resources.ModelResource):
+    issue = fields.Field(
+        column_name='issue',
+        attribute='issue',
+        widget=ForeignKeyWidget(Issue, 'url')  # or another identifying field
+    )
+    duration = fields.Field()
+    overwork_duration = fields.Field()
+
+    class Meta:
+        model = Work
+        fields = ('issue', 'start', 'end', 'duration', 'overwork_duration')
+        export_order = ('issue', 'start', 'end', 'overwork_duration', 'duration')
+
+    def dehydrate_duration(self, obj):
+        return obj.duration
+
+    def dehydrate_overwork_duration(self, obj):
+        return obj.overwork_duration
+
 @admin.register(Work)
-class WorkAdmin(admin.ModelAdmin):
+class WorkAdmin(ImportExportModelAdmin):
     list_display = ('issue', 'start', 'end', 'overwork_duration', 'duration')
     actions = [mark_as_overwork]
+    formats = [base_formats.CSV, base_formats.XLSX]
+    resource_class = WorkResource
 
     def changelist_view(self, request, extra_context=None):
         # Call the superclass to get the default context

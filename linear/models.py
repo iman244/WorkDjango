@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import F, ExpressionWrapper, DurationField
 from datetime import timedelta
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class Issue(models.Model):
@@ -22,11 +23,27 @@ class Issue(models.Model):
 
 
 class Work(models.Model):
+    PERSIAN_MONTHS = (
+        ('فروردین', 'فروردین'),
+        ('اردیبهشت', 'اردیبهشت'),
+        ('خرداد', 'خرداد'),
+        ('تیر', 'تیر'),
+        ('مرداد', 'مرداد'),
+        ('شهریور', 'شهریور'),
+        ('مهر', 'مهر'),
+        ('آبان', 'آبان'),
+        ('آذر', 'آذر'),
+        ('دی', 'دی'),
+        ('بهمن', 'بهمن'),
+        ('اسفند', 'اسفند'),
+    )
+    
     issue = models.ForeignKey(Issue, on_delete=models.PROTECT, related_name='works')
     description = models.TextField(max_length=4000,default="", blank=True, null=True)
     start = models.DateTimeField()
     end = models.DateTimeField()
     overwork_day = models.BooleanField(default=False)
+    # wage_month = models.CharField(_("wage month"), max_length=2550, choices=PERSIAN_MONTHS, blank=True, null=True, default='فروردین')
 
     @property
     def duration(self):

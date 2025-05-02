@@ -1,0 +1,14 @@
+{% extends "admin/change_list.html" %}
+
+{% block result_list %}
+  <div class="total-summary">
+    Total Sum: <strong>{{ total }}</strong>
+  </div>
+  <div class="total-summary">
+    Total overwork Sum: <strong>{{ total_overwork }}</strong>
+  </div>
+  <div class="total-value">
+    Total Value: <strong>{{ total_value }}</strong>
+  </div>
+  {{ block.super }}  <!-- Render the default result list -->
+{% endblock %}
