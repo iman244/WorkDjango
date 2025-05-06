@@ -43,7 +43,7 @@ class Work(models.Model):
     start = models.DateTimeField()
     end = models.DateTimeField()
     overwork_day = models.BooleanField(default=False)
-    # wage_month = models.CharField(_("wage month"), max_length=2550, choices=PERSIAN_MONTHS, blank=True, null=True, default='فروردین')
+    wage_month = models.CharField(_("wage month"), max_length=2550, choices=PERSIAN_MONTHS, blank=True, null=True, default='فروردین')
 
     @property
     def duration(self):
@@ -54,8 +54,42 @@ class Work(models.Model):
         if self.overwork_day:
             return self.end - self.start
         else:
-            overwork = self.end - self.start - timedelta(hours=9)   
-            return overwork if overwork > timedelta() else timedelta()
+            # Get all works from same day
+            same_day_works = Work.objects.filter(
+                start__date=self.start.date(),
+                end__date=self.end.date()
+            ).order_by('start')
+            
+            # Calculate total duration for the day
+            total_duration = timedelta()
+            for work in same_day_works:
+                total_duration += work.end - work.start
+            
+            # If total duration is less than 9 hours, no overwork
+            if total_duration <= timedelta(hours=9):
+                return timedelta()
+            
+            # Calculate when the 9-hour mark is passed
+            nine_hour_mark = None
+            running_total = timedelta()
+            for work in same_day_works:
+                work_duration = work.end - work.start
+                if running_total + work_duration > timedelta(hours=9):
+                    # This is the work where 9-hour mark is passed
+                    nine_hour_mark = work.start + (timedelta(hours=9) - running_total)
+                    break
+                running_total += work_duration
+            
+            # If this work starts after the 9-hour mark, it's all overwork
+            if self.start >= nine_hour_mark:
+                return self.end - self.start
+            
+            # If this work spans the 9-hour mark
+            if self.start < nine_hour_mark and self.end > nine_hour_mark:
+                return self.end - nine_hour_mark
+            
+            # If this work is entirely before the 9-hour mark
+            return timedelta()
 
     def __str__(self):
         return self.issue.url

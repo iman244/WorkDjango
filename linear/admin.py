@@ -93,7 +93,8 @@ class WorkResource(resources.ModelResource):
 
 @admin.register(Work)
 class WorkAdmin(ImportExportModelAdmin):
-    list_display = ('issue', 'start', 'end', 'overwork_duration', 'duration')
+    list_display = ('issue', 'wage_month', 'start', 'end', 'overwork_duration', 'duration')
+    list_filter = ('wage_month',)
     actions = [mark_as_overwork]
     formats = [base_formats.CSV, base_formats.XLSX]
     resource_class = WorkResource
