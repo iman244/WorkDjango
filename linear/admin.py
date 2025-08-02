@@ -1,14 +1,14 @@
 import math
 from django.contrib import admin
-from .models import Issue, Work
 from django.db.models import ExpressionWrapper, F, DurationField, Sum
 from django.utils.formats import number_format
 from datetime import timedelta
-from .actions import mark_as_overwork
 from import_export.admin import ImportExportModelAdmin
 from import_export.formats import base_formats
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget
+from .models import Issue, Work
+from .actions import mark_as_overwork
 
 
 class WorkInline(admin.TabularInline):
@@ -17,7 +17,7 @@ class WorkInline(admin.TabularInline):
 
 @admin.register(Issue)
 class IssueAdmin(ImportExportModelAdmin):
-    list_display = ('url', 'duration')
+    list_display = ('title', 'duration')
     inlines = [WorkInline]
     formats = [base_formats.CSV, base_formats.XLSX]
 
@@ -75,7 +75,7 @@ class WorkResource(resources.ModelResource):
     issue = fields.Field(
         column_name='issue',
         attribute='issue',
-        widget=ForeignKeyWidget(Issue, 'url')  # or another identifying field
+        widget=ForeignKeyWidget(Issue, 'title')  # or another identifying field
     )
     duration = fields.Field()
     overwork_duration = fields.Field()

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class Issue(models.Model):
-    url = models.URLField()
+    title = models.CharField(max_length=255, null=True, blank=True)
 
     def duration(self):
         """
@@ -19,7 +19,7 @@ class Issue(models.Model):
         return total_duration or timedelta()
 
     def __str__(self):
-        return self.url
+        return self.title
 
 
 class Work(models.Model):
@@ -92,4 +92,4 @@ class Work(models.Model):
             return timedelta()
 
     def __str__(self):
-        return self.issue.url
+        return self.issue.title
